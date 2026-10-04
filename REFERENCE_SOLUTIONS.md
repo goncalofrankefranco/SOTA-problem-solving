@@ -1,18 +1,26 @@
 # 2026 Poland Selection — Reference Solutions
 
-These notes cover the four Stage 3 tasks and the selected Stage 2 task from the [official repository](https://github.com/OlimpiadaAI/III-OlimpiadaAI). The [SOTA checklist](https://checklist.sota-ai.org/) is included as a companion source. Concise solution implementations are under [`solutions/`](solutions/); official statements and starter notebooks remain linked to the organizers' repository.
+These notes track all 13 tasks across the three stages in the [official 2026 Poland selection repository](https://github.com/OlimpiadaAI/III-OlimpiadaAI). The [SOTA checklist](https://checklist.sota-ai.org/) is included as a companion source. Solution code and reports are collected in this repository; official statements and full organizer notebooks remain linked to the organizers' repository.
 
 ## Validation summary
 
 | Problem | Released validation result | Estimated points |
 |---|---:|---:|
+| Filtry konwolucyjne | official worked notebook: MSE 0.0078 / 0.0293 | 100/100 |
+| Klasyfikacja wieloetykietowa | official worked notebook: macro F1 0.886 | 100/100 |
+| Szept czy krzyk | official worked notebook: balanced accuracy 1.000 | 100/100 |
+| Zmiany semantyczne | official worked notebook: balanced accuracy 0.8716 | 100/100 |
+| Segmentacja multispektralna | official worked notebook: mIoU 0.823 | 100/100 |
 | Lokalizacja decyzji | Not measured; the image archive and model are not present in this workspace | Unverified |
 | Piksele | 63.45% accuracy | 100/100 |
 | Pustka | 5/5 trigger pairs recovered | 100/100 |
 | Ukryte Kategorie | 0.483 mean IoU | 100/100 |
 | Optymalizator malarza (Stage 2) | 0.004927 mean MSE | 100/100 |
+| Drzewa decyzyjne | collection A solution under improvement | 58.8/100 prior run |
+| Kolorowanie z GANem | assets not available in this workspace; solution under development | Unverified |
+| Predyktor tokenów | model/data assets not available in this workspace; solution under development | Unverified |
 
-Measured results use the released validation sets and the evaluator logic in each notebook. They do not establish secret-test performance.
+The first five scores above are recorded in the organizers' public worked notebooks; the other scores come from local experiments against released validation data. None establishes secret-test performance. “Under development” entries are unresolved, not full-credit claims.
 
 ---
 
@@ -271,3 +279,104 @@ The per-image loop has at most six starts and took under one minute for the rele
 ## Stage 2 selection note
 
 I first explored **Drzewa decyzyjne**. Its solution scored 58.8/100 on released collection A, below the full-credit criterion, so I moved to **Optymalizator malarza**, which reached the published 100-point MSE threshold on its released validation set. The decision-tree experiment is not presented as a selected solution.
+
+---
+
+## Stage 1 — Official worked solutions
+
+The organizers publish a full worked notebook for each Stage 1 problem. The EDA notes, implementation, and released-validation numbers below summarize those notebooks; they are attributed to the organizers and were not rerun in this workspace. Use the links for the complete, executable code.
+
+### 1. Filtry konwolucyjne — Convolutional Filters
+
+**Problem domain:** Image restoration, inverse problems, linear least squares  
+**Evaluation metric:** MSE, with 70 points for the full-resolution filter and 30 for upsampling plus filtering
+
+**Abridged statement:** Recover a shared spatial filter that reverses image corruption, then reconstruct a full-resolution image from a corrupted half-resolution image. The dataset provides 150 training and 50 validation triples of 256×256 RGB images, their corrupted copies, and 128×128 corrupted copies.
+
+**EDA and experiments:** The corrupted full-resolution images show a consistent blur and dark border, suggesting a convolutional degradation. The low-resolution images lose spatial detail rather than simply representing a clean 2× resize. Kernel sizes 2–10 were explored; odd sizes tended to outperform the adjacent even sizes, with 9×9 a strong final choice. Nearest-neighbor, bilinear, and bicubic upsampling gave validation MSEs 0.041620, 0.036393, and 0.040749, respectively, after the first filter.
+
+**Solution:** A single convolution is linear in its kernel weights. Accumulate the window Gram matrix `XᵀX` and target product `Xᵀy` over images, then solve the small least-squares system instead of storing all windows. For the second task, insert zeros between low-resolution pixels, apply a learned 7×7 reconstruction filter, then apply the 9×9 restoration filter.
+
+**Official result:** MSE 0.0078 for the 9×9 filter and 0.0293 for the upsampling task; 70/70 + 30/30 = **100/100** on the released validation set. The organizer also reports that the linear solve is much faster than iterative training.
+
+**Hints:** (1) Inspect what the corruption does at full and half resolution. (2) Which visual artifacts suggest blur or information loss? (3) Is the output linear in the filter weights? (4) Can you accumulate least-squares statistics without building a huge patch matrix?
+
+**One-line solution:** Solve the shared convolution kernel by least squares, and use zero insertion plus a learned 7×7 reconstruction kernel before the 9×9 restoration kernel.
+
+**Official solution notebook:** [Filtry konwolucyjne — opracowanie](https://github.com/OlimpiadaAI/III-OlimpiadaAI/blob/main/1_etap/1_filtry_konwolucyjne/filtry_konwolucyjne_opracowanie.ipynb)
+
+### 2. Klasyfikacja wieloetykietowa — Multi-label Classification
+
+**Problem domain:** Computer vision, transfer learning, multi-label classification  
+**Evaluation metric:** Macro F1 over 10 clothing labels
+
+**Abridged statement:** Classify which of 10 clothing types appear in 168×168 grayscale images. There are 6,318 labeled training images, 702 validation images, and 780 hidden-test images.
+
+**EDA and experiments:** Pixel intensities range from 0 to 255, with mean 17.0916 and standard deviation 51.9870, so most of the image background is dark. Pairwise label co-occurrence is modest (about 32% conditional probability), with no strong pair that can substitute for visual recognition. A simple CNN trained from scratch reached F1 0.699 in the organizer’s report, while a naïve baseline reached 0.545.
+
+**Solution:** Replicate each grayscale image to three channels, fine-tune a pretrained torchvision ResNet (the final reported model uses ResNet18), and train the 10-logit head with a multi-label loss. Search learning rate and weight decay over short runs, and tune one decision threshold per label on validation predictions instead of using 0.5 for every class.
+
+**Official result:** Macro F1 **0.886**, above the 0.87 full-credit threshold, for **100/100** on the released validation set. The organizer’s report used ten short hyperparameter trials and selected a ResNet18 configuration.
+
+**Hints:** (1) Check whether pixels are grayscale and how much of each image is background. (2) Inspect label frequencies and co-occurrence before choosing a model. (3) Why might a pretrained RGB backbone still help on grayscale inputs? (4) Should every label share the same probability threshold?
+
+**One-line solution:** Fine-tune a pretrained ResNet18 for 10 independent binary outputs, then calibrate the per-label thresholds on validation data.
+
+**Official solution notebook:** [Klasyfikacja wieloetykietowa — opracowanie](https://github.com/OlimpiadaAI/III-OlimpiadaAI/blob/main/1_etap/2_klasyfikacja_wieloetykietowa/klasyfikacja_wieloetykietowa_opracowanie.ipynb)
+
+### 3. Szept czy krzyk — Whisper or Scream
+
+**Problem domain:** Audio classification, signal processing, spectrogram CNNs  
+**Evaluation metric:** Balanced accuracy across the audio classes
+
+**Abridged statement:** Classify short audio signals as normal speech, whisper, or scream. Samples have variable length; the longest training recording contains 80,000 samples.
+
+**EDA and experiments:** Waveform lengths vary, making raw fixed-length inputs awkward. The worked solution compares a raw-waveform recurrent model with a time-frequency representation. A quantized raw-signal BiGRU reached balanced accuracy 0.8873 (74 points), while the spectrogram CNN reached 1.0000.
+
+**Solution:** Convert each recording to a log-mel spectrogram and train a convolutional classifier. The time-frequency representation exposes loudness and spectral-shape differences between whisper, ordinary speech, and screams while handling variable durations with padding or resizing. The organizer’s notebook supplies the feature extraction, model, and evaluation code.
+
+**Official result:** Balanced accuracy **1.0000**, for **100/100** on the released validation set. The alternative raw-signal BiGRU result is a useful reminder that a more direct representation was less reliable here.
+
+**Hints:** (1) Compare duration and amplitude distributions by class. (2) What frequency structure distinguishes a whisper from a scream? (3) Can an audio clip be represented as an image over time and frequency? (4) Compare that representation with a raw-signal recurrent baseline.
+
+**One-line solution:** Train a CNN on log-mel spectrograms; the organizer’s validation run reached perfect balanced accuracy.
+
+**Official solution notebook:** [Szept czy krzyk — opracowanie](https://github.com/OlimpiadaAI/III-OlimpiadaAI/blob/main/1_etap/3_szept_czy_krzyk/szept_czy_krzyk_opracowanie.ipynb)
+
+### 4. Zmiany semantyczne — Semantic Change
+
+**Problem domain:** NLP, historical word embeddings, representation alignment, binary classification  
+**Evaluation metric:** Balanced accuracy
+
+**Abridged statement:** Given historical word-vector representations from two periods, predict whether a word changed meaning between 1900 and 1990.
+
+**EDA and experiments:** The worked notebook evaluates 832 labeled examples and emphasizes that raw cosine comparisons across independently trained embedding spaces are not directly comparable. Its features compare neighborhoods and similarity structure across time, after aligning the spaces. Candidate signals include first- and second-order similarities, anchor-neighbor ranks, and changes in nearest-neighbor ordering.
+
+**Solution:** Align the 1990 embedding space to the 1900 space with orthogonal Procrustes. Build multiple similarity and neighbor-rank-shift features using frequency-based and sampled anchor words. Train base classifiers, including histogram gradient boosting and logistic regression, then stack out-of-fold probabilities in a logistic meta-classifier and tune the final decision threshold.
+
+**Official result:** Balanced accuracy **0.8716**, reported as **100/100** on the released validation set.
+
+**Hints:** (1) Why can embeddings from different training periods be rotated relative to each other? (2) Align the spaces before comparing vectors. (3) Do neighborhood ranks preserve useful information beyond cosine distance? (4) Could several complementary classifiers be calibrated together?
+
+**One-line solution:** Orthogonally align the embedding spaces, engineer neighborhood and rank-shift features, then stack calibrated classifiers.
+
+**Official solution notebook:** [Zmiany semantyczne — opracowanie](https://github.com/OlimpiadaAI/III-OlimpiadaAI/blob/main/1_etap/4_zmiany_semantyczne/zmiany_semantyczne_opracowanie.ipynb)
+
+### 5. Segmentacja multispektralna — Multispectral Segmentation
+
+**Problem domain:** Remote sensing, dimensionality reduction, semantic segmentation  
+**Evaluation metric:** Mean IoU over four terrain classes; the input must be reduced from 12 bands to 3
+
+**Abridged statement:** Segment 30×30 satellite patches into water, land, vegetation, and industrial terrain. The dataset has 48 training and 16 validation images, each with 12 spectral channels.
+
+**EDA and experiments:** There are no missing values. Training pixels are distributed across the four classes as `[12049, 11348, 13384, 6419]`; validation distribution differs, especially for land. Several channels are highly correlated (often above 0.95), and visual inspection shows redundant bands. The worked solution reduces all 12 bands to 3 standardized principal components, augments the small image set with flips/rotations, and trains a compact pixelwise CNN. Its model uses four convolutions with batch normalization and ReLU, cross-entropy, AdamW, and a long OneCycleLR schedule.
+
+**Solution:** Fit PCA on the training pixels, apply the same transform to each sample, and train the CNN on the three components. Keep spatial resolution intact so the network can use local boundaries; choose the best validation checkpoint by mIoU.
+
+**Official result:** mIoU **0.823** with 3 channels, reported as **100/100** after 300 epochs (about 8 seconds in the organizer’s recorded run). A larger attention encoder-decoder scored mIoU 0.796 and 99 points, so the simpler model was better on this small dataset.
+
+**Hints:** (1) Compare bands and label distributions before training. (2) Which channels are redundant? (3) Can PCA preserve most spectral information in three components? (4) How can flips and rotations help when there are only 48 training patches?
+
+**One-line solution:** Standardize the 12 bands, project them to three PCA components, then train an augmented four-layer segmentation CNN.
+
+**Official solution notebook:** [Segmentacja multispektralna — opracowanie](https://github.com/OlimpiadaAI/III-OlimpiadaAI/blob/main/1_etap/5_segmentacja_multispektralna/segmentacja_multispektralna_opracowanie.ipynb)
