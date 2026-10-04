@@ -20,7 +20,7 @@ These notes track all 13 tasks across the three stages in the [official 2026 Pol
 | Kolorowanie z GANem | grayscale-copy baseline: 21.5934 dB PSNR; candidate score unmeasured | Unverified |
 | Predyktor tokenów | 0.684145 mean balanced accuracy on 99 released validation records | 100/100 on released validation |
 
-The first five scores above are recorded in the organizers' public worked notebooks; the other scores come from local experiments against released validation data. Decision Trees remains below full credit, and the GAN value is a baseline rather than a final score. None establishes secret-test performance.
+The first five scores above are recorded in the organizers' public worked notebooks; the other scores come from local experiments against released validation data. Decision Trees remains below full credit. A separate five-fold color-prior diagnostic scores 100/100 out of fold when fitted on the other released pairs, but is excluded from the solution because the task describes those pairs as validation-only; the generator-only candidate remains unverified. None of these results establishes secret-test performance.
 
 ---
 
