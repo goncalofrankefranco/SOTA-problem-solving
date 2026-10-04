@@ -11,16 +11,16 @@ These notes track all 13 tasks across the three stages in the [official 2026 Pol
 | Szept czy krzyk | official worked notebook: balanced accuracy 1.000 | 100/100 |
 | Zmiany semantyczne | official worked notebook: balanced accuracy 0.8716 | 100/100 |
 | Segmentacja multispektralna | official worked notebook: mIoU 0.823 | 100/100 |
-| Lokalizacja decyzji | Not measured; the image archive and model are not present in this workspace | Unverified |
+| Lokalizacja decyzji | Not measured; validation archive/checkpoint unavailable here | Unverified |
 | Piksele | 63.45% accuracy | 100/100 |
 | Pustka | 5/5 trigger pairs recovered | 100/100 |
 | Ukryte Kategorie | 0.483 mean IoU | 100/100 |
 | Optymalizator malarza (Stage 2) | 0.004927 mean MSE | 100/100 |
-| Drzewa decyzyjne | collection A solution under improvement | 58.8/100 prior run |
-| Kolorowanie z GANem | assets not available in this workspace; solution under development | Unverified |
-| Predyktor tokenów | model/data assets not available in this workspace; solution under development | Unverified |
+| Drzewa decyzyjne | 55/100 baseline wins on collection A; 88.70% mean accuracy | 66.0/100 |
+| Kolorowanie z GANem | grayscale-copy baseline: 21.5934 dB PSNR; candidate score unmeasured | Unverified |
+| Predyktor tokenów | 0.684145 mean balanced accuracy on 99 released validation records | 100/100 on released validation |
 
-The first five scores above are recorded in the organizers' public worked notebooks; the other scores come from local experiments against released validation data. None establishes secret-test performance. “Under development” entries are unresolved, not full-credit claims.
+The first five scores above are recorded in the organizers' public worked notebooks; the other scores come from local experiments against released validation data. Decision Trees remains below full credit, and the GAN value is a baseline rather than a final score. None establishes secret-test performance.
 
 ---
 
@@ -47,7 +47,7 @@ The evaluator wraps the solution in `torch.no_grad()`, so the implementation exp
 
 ### Result and diagnostics
 
-The implementation is in the notebook, but its IoU and score remain unverified until the Google Drive files referenced by the notebook are available. There is also a scoring-text inconsistency in the starter notebook: its prose says IoU ≤0.25 earns zero, while the executable scoring function maps mean IoU 0.191 to 0 points and 0.245 to 100 points, clamped to that range. The implementation should be judged with the executable evaluator unless the organizers clarify the prose.
+The implementation is in [lokalizacja_decyzji.py](solutions/stage3/lokalizacja_decyzji.py), but its IoU and score remain unverified until the Google Drive files referenced by the notebook are available. There is also a scoring-text inconsistency in the starter notebook: its prose says IoU ≤0.25 earns zero, while the executable scoring function maps mean IoU 0.191 to 0 points and 0.245 to 100 points, clamped to that range. The implementation should be judged with the executable evaluator unless the organizers clarify the prose. The asset checks and evidence limits are documented in the [dedicated report](reports/decision_localization.md).
 
 ### Compute and alternatives
 
@@ -276,9 +276,13 @@ The per-image loop has at most six starts and took under one minute for the rele
 
 ---
 
-## Stage 2 selection note
+## Stage 2 task reports
 
-I first explored **Drzewa decyzyjne**. Its solution scored 58.8/100 on released collection A, below the full-credit criterion, so I moved to **Optymalizator malarza**, which reached the published 100-point MSE threshold on its released validation set. The decision-tree experiment is not presented as a selected solution.
+Stage 2 has four tasks. The [Painter Optimizer](#selected-stage-2-solution--optymalizator-malarza-painter-optimizer) reaches its released-validation full-credit threshold. The remaining solutions, available measurements, and limitations are documented separately:
+
+- [Decision Trees](reports/decision_trees.md): 66.0/100 on collection A after testing rotation and training-CV pruning policies; full credit was not reached.
+- [GAN Colorization](reports/gan_colorization.md): inversion candidate implemented; the Google Drive checkpoint is inaccessible in this workspace, so no candidate score is verified.
+- [Token Predictor](reports/token_predictor.md): the train-stream-only candidate reaches 0.684145 mean balanced accuracy (100/100) on the released validation split; hidden-test performance is unverified.
 
 ---
 
