@@ -2,6 +2,8 @@
 
 These notes track all 13 tasks across the three stages in the [official 2026 Poland selection repository](https://github.com/OlimpiadaAI/III-OlimpiadaAI). The [SOTA checklist](https://checklist.sota-ai.org/) is included as a companion source. Solution code and reports are collected in this repository; official statements and full organizer notebooks remain linked to the organizers' repository.
 
+For the earlier selections, see the [2024 reports and solutions](reports/2024/README.md) and the [2025 reports and solutions](reports/2025/README.md). The top-level README links all three years and their code indexes.
+
 ## Validation summary
 
 | Problem | Released validation result | Estimated points |
