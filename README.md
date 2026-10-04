@@ -1,11 +1,12 @@
-# SOTA problem solutions — 2026 Poland selection
+# SOTA solutions — 2026 Poland selection
 
-Reference solutions, EDA notes, experiments, and progressive hints for the 2026 Poland selection tasks.
+Reference solutions, EDA, experiments, validation evidence, and progressive hints for the 13 official tasks across Stages 1–3.
 
-- [Full reports, validation results, and hints](REFERENCE_SOLUTIONS.md)
-- [Stage 3 solution snippets](solutions/stage3/README.md)
-- [Selected Stage 2 solution: Painter Optimizer](2_etap/optymalizator_malarza/solution.py)
-- [Official problem statements and starter notebooks](https://github.com/OlimpiadaAI/III-OlimpiadaAI)
+- [Complete reports, scores, and hints](REFERENCE_SOLUTIONS.md)
+- [Stage 3 solution code](solutions/stage3/README.md)
+- [Stage 1 organizer worked solutions](https://github.com/OlimpiadaAI/III-OlimpiadaAI/tree/main/1_etap)
+- [Stage 2 official tasks](https://github.com/OlimpiadaAI/III-OlimpiadaAI/tree/main/2_etap)
+- [Stage 3 official tasks](https://github.com/OlimpiadaAI/III-OlimpiadaAI/tree/main/3_etap)
 - [SOTA checklist](https://checklist.sota-ai.org/)
 
-Scores in the reports are measured on released validation data using the published metrics. They do not claim results on hidden test sets. This repository contains solution notes and code, not copies of the organizers' datasets, checkpoints, or starter notebooks.
+Scores are labeled as either locally measured or recorded by the organizers. Released validation scores do not establish secret-test performance. This repository keeps the reports and solution code; official statements, starter notebooks, datasets, and pretrained checkpoints remain at their source.
