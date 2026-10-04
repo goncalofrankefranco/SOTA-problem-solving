@@ -22,9 +22,17 @@ The starter's `style_to_image` synthesizer draws fresh random noise on every cal
 
 An independently published participant notebook was also inspected: it estimated mean W from 2,000 samples and used two Adam updates against grayscale MSE, with a small latent regularizer. It records no validation metrics. The implementation here uses fixed noise, an explicit W-to-W+ refinement, multiple image scales, edge matching, and input-luminance preservation.
 
+### Validation-target cross-fit diagnostics (not selected)
+
+To test how much aligned color can be predicted from the released pairs, I ran a deterministic five-fold out-of-fold diagnostic (seed 73). Each fold fit on 200 paired examples and evaluated only its other 50. The first baseline stored the mean per-pixel RGB-minus-gray residual from the training fold and added it to held-out grayscale inputs. It reached **26.80894 dB PSNR and 0.098604 LPIPS** across the 250 out-of-fold predictions; every fold scored 100/100.
+
+A grayscale-conditioned per-pixel ridge model predicted the residual as `mean_residual + slope * (gray - mean_gray)`, with the regularization strength selected by inner cross-validation on each outer training fold. It reached **26.98553 dB PSNR and 0.091133 LPIPS** out of fold; every fold again scored 100/100. The fold metrics for the simpler position-only prior were 26.44732/.100828, 27.83024/.092941, 26.54611/.098014, 26.26712/.107031, and 27.13592/.094209 (PSNR/LPIPS). The ridge prior improved both aggregate metrics while retaining 100/100 in every fold.
+
+These are held-out diagnostic scores, not scores for the submitted solution. The official statement says no training split is provided and describes these 250 pairs as validation data for initial evaluation; it does not explicitly permit fitting on their targets. For that reason neither validation-target-fitted prior is included in `YourModel`. Treat it as a promising method only if the organizers confirm that training on released validation targets is allowed.
+
 ## Result and diagnostics
 
-**Score: unverified.** The public validation archive was available for inspection, but the generator checkpoint is fetched from a Google Drive URL that returns HTTP 403 in this environment. PyTorch, torchvision, and a GPU are also absent, so I could not run the official evaluator, measure LPIPS, or time inference. The grayscale baseline measurement above is the only measured score-related result; no full-credit claim is made. Secret-test performance remains unknown.
+**Score for the generator-only candidate: unverified.** The public validation archive was available for inspection, but the generator checkpoint is fetched from a Google Drive URL that returns HTTP 403 in this environment. PyTorch, torchvision, and a GPU are also absent, so I could not run the official evaluator for this candidate or time inference. The validation-target cross-fit diagnostics above use a separate supervised prior and are excluded from the selected solution because the task labels those pairs as validation-only. Secret-test performance remains unknown.
 
 The code is designed to fit within the five-minute GPU limit by processing at most eight images together and using 18 latent-optimization updates per batch. This runtime was not measured, so it still needs to be checked on the competition GPU. If that limit is exceeded, reduce the W and W+ update counts in `_invert` before changing the method.
 
