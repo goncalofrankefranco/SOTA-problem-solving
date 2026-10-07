@@ -15,6 +15,7 @@ Task reports, runnable solution code, EDA, experiments, score evidence, and prog
 - [Canada 2025](reports/canada/README.md) · [solution code](solutions/canada/README.md)
 - [Colombia 2025](reports/colombia/README.md) · [solution code](solutions/colombia/README.md)
 - [Japan 2025](reports/japan/README.md) · [solution code](solutions/japan/README.md)
+- [NOAI China 2024–2026: all 12 task reports](reports/china/README.md) · [candidate code](solutions/china/README.md)
 - [Singapore 2025–2026](reports/singapore/README.md) · [solution code](solutions/singapore/README.md)
 
 ## Official sources

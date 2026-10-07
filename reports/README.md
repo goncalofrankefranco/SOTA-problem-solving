@@ -26,4 +26,5 @@ See [REFERENCE_SOLUTIONS.md](../REFERENCE_SOLUTIONS.md) for the full 2026 task-b
 | Canada · CAIO 2025 | [Two task reports](canada/README.md) | [Solutions](../solutions/canada/README.md) |
 | Colombia AI Olympiad 2025 | [Two task reports](colombia/README.md) | [Solutions](../solutions/colombia/README.md) |
 | Japan · JOAI 2025 | [Task report](japan/README.md) | [Solution](../solutions/japan/README.md) |
+| China · NOAI 2024–2026 | [All 12 task reports](china/README.md) | [Candidate solutions](../solutions/china/README.md) |
 | Singapore · NOAI 2025–2026 | [Nine task reports](singapore/README.md) | [Solutions](../solutions/singapore/README.md) |
