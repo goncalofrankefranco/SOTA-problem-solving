@@ -1,6 +1,6 @@
 # Task reports
 
-Annual indexes cover all 38 official tasks across the 2024–2026 Poland selections. Every task report records its domain and metric, abridged statement, available data and EDA, experiments, solution strategy, score provenance, compute notes, alternatives, and progressive hints.
+The Poland indexes cover all 38 official tasks across the 2024–2026 selections. Additional country indexes cover the task sets listed below. Reports record the domain and metric, abridged statement, available data and EDA, experiments, solution strategy, score provenance, compute notes, alternatives, and progressive hints.
 
 | Year | Tasks | Report index | Solution code |
 |---|---:|---|---|
@@ -18,3 +18,12 @@ Annual indexes cover all 38 official tasks across the 2024–2026 Poland selecti
 | Token Predictor | [token_predictor.md](token_predictor.md) | 100/100 on released validation with a train-only candidate; hidden test unverified |
 
 See [REFERENCE_SOLUTIONS.md](../REFERENCE_SOLUTIONS.md) for the full 2026 task-by-task solutions, experiments, and diagnostics.
+
+## Other national olympiads
+
+| Country / olympiad | Task reports | Solution code |
+|---|---|---|
+| Canada · CAIO 2025 | [Two task reports](canada/README.md) | [Solutions](../solutions/canada/README.md) |
+| Colombia AI Olympiad 2025 | [Two task reports](colombia/README.md) | [Solutions](../solutions/colombia/README.md) |
+| Japan · JOAI 2025 | [Task report](japan/README.md) | [Solution](../solutions/japan/README.md) |
+| Singapore · NOAI 2025–2026 | [Nine task reports](singapore/README.md) | [Solutions](../solutions/singapore/README.md) |
